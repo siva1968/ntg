@@ -1,0 +1,313 @@
+/**
+ * NerdsIQ AI Assistant - Public Styles
+ *
+ * @package NerdsIQ_AI_Assistant
+ * @since   1.0.0
+ */
+
+/* ===========================
+   CHAT CONTAINER & LAUNCH BUTTON
+   =========================== */
+
+.nerdsiq-chat-container {
+    position: fixed;
+    z-index: 999999;
+    font-family: var(--nerdsiq-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+}
+
+.nerdsiq-chat-container.position-bottom-right {
+    bottom: 20px;
+    right: 20px;
+}
+
+.nerdsiq-chat-container.position-bottom-left {
+    bottom: 20px;
+    left: 20px;
+}
+
+.nerdsiq-launch-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: var(--nerdsiq-primary-color, #0073aa);
+    color: #ffffff;
+    border: none;
+    border-radius: var(--nerdsiq-border-radius, 10px);
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    box-shadow: var(--nerdsiq-box-shadow, 0 4px 16px rgba(0,0,0,0.15));
+    transition: all 0.3s ease;
+}
+
+.nerdsiq-launch-btn:hover {
+    background: var(--nerdsiq-secondary-color, #005177);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+}
+
+.nerdsiq-launch-btn .nerdsiq-icon {
+    width: 24px;
+    height: 24px;
+}
+
+/* ===========================
+   CHAT WINDOW
+   =========================== */
+
+.nerdsiq-chat-window {
+    position: fixed;
+    width: var(--nerdsiq-widget-width, 400px);
+    max-width: calc(100vw - 40px);
+    height: var(--nerdsiq-widget-height, 600px);
+    max-height: calc(100vh - 100px);
+    background: var(--nerdsiq-background-color, #ffffff);
+    border-radius: var(--nerdsiq-border-radius, 10px);
+    box-shadow: var(--nerdsiq-box-shadow, 0 4px 16px rgba(0,0,0,0.15));
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: width 0.3s ease, height 0.3s ease, max-width 0.3s ease, max-height 0.3s ease, top 0.3s ease, left 0.3s ease, right 0.3s ease, bottom 0.3s ease, border-radius 0.3s ease;
+}
+
+/* Maximized State */
+.nerdsiq-chat-window.nerdsiq-maximized {
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: 100vw !important;
+    max-height: 100vh !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    border-radius: 0 !important;
+    z-index: 999999;
+}
+
+.nerdsiq-chat-window.nerdsiq-maximized .nerdsiq-maximize-icon {
+    display: none;
+}
+
+.nerdsiq-chat-window.nerdsiq-maximized .nerdsiq-restore-icon {
+    display: block !important;
+}
+
+.nerdsiq-chat-container.position-bottom-right .nerdsiq-chat-window {
+    bottom: 80px;
+    right: 20px;
+}
+
+.nerdsiq-chat-container.position-bottom-left .nerdsiq-chat-window {
+    bottom: 80px;
+    left: 20px;
+}
+
+/* Header */
+.nerdsiq-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background: var(--nerdsiq-primary-color, #0073aa);
+    color: #ffffff;
+}
+
+.nerdsiq-header-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.nerdsiq-header-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.nerdsiq-header-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.nerdsiq-icon-btn {
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.nerdsiq-icon-btn:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+/* Messages Area */
+.nerdsiq-messages {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background: var(--nerdsiq-background-color, #f5f5f5) !important;
+}
+
+.nerdsiq-message {
+    margin-bottom: 16px;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.nerdsiq-message-content {
+    padding: 12px 16px;
+    border-radius: 12px;
+    max-width: 85%;
+    word-wrap: break-word;
+    line-height: var(--nerdsiq-line-height, 1.5);
+    font-size: var(--nerdsiq-font-size, 14px);
+}
+
+.nerdsiq-message.user .nerdsiq-message-content {
+    background: var(--nerdsiq-user-message-color, #0073aa);
+    color: #ffffff;
+    margin-left: auto;
+}
+
+.nerdsiq-message.assistant .nerdsiq-message-content {
+    background: var(--nerdsiq-ai-message-color, #f0f0f0);
+    color: var(--nerdsiq-text-color, #333333);
+}
+
+/* Links and CTAs in messages */
+.nerdsiq-chat-window .nerdsiq-message-content a,
+.nerdsiq-chat-window .nerdsiq-message-content a:link,
+.nerdsiq-chat-window .nerdsiq-message-content a:visited {
+    color: #0047AC !important;
+    text-decoration: underline !important;
+    font-weight: 500;
+}
+
+.nerdsiq-chat-window .nerdsiq-message-content a:hover,
+.nerdsiq-chat-window .nerdsiq-message-content a:active {
+    color: #FFD301 !important;
+}
+
+/* Input Area */
+.nerdsiq-input-area {
+    border-top: 1px solid #e0e0e0;
+    padding: 16px;
+    background: var(--nerdsiq-background-color, #ffffff);
+}
+
+.nerdsiq-message-form {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+}
+
+.nerdsiq-input {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: var(--nerdsiq-font-size, 14px);
+    font-family: inherit;
+    resize: none;
+    max-height: 100px;
+}
+
+.nerdsiq-input:focus {
+    outline: none;
+    border-color: var(--nerdsiq-primary-color, #0073aa);
+}
+
+.nerdsiq-send-btn {
+    padding: 10px;
+    background: #0047AC !important;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.nerdsiq-send-btn:hover {
+    background: #FFD301 !important;
+    color: #000000;
+    transform: scale(1.05);
+}
+
+.nerdsiq-send-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Typing Indicator */
+.nerdsiq-typing-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    color: #666;
+    font-size: 13px;
+}
+
+.nerdsiq-typing-dots {
+    display: flex;
+    gap: 4px;
+}
+
+.nerdsiq-typing-dots span {
+    width: 6px;
+    height: 6px;
+    background: #666;
+    border-radius: 50%;
+    animation: bounce 1.4s infinite ease-in-out;
+}
+
+.nerdsiq-typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+.nerdsiq-typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes bounce {
+    0%, 80%, 100% { transform: scale(0); }
+    40% { transform: scale(1); }
+}
+
+/* Footer */
+.nerdsiq-footer {
+    padding: 8px 20px;
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    background: var(--nerdsiq-background-color, #ffffff);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .nerdsiq-chat-window {
+        width: 100vw !important;
+        height: 100vh !important;
+        max-width: 100vw;
+        max-height: 100vh;
+        top: 0 !important;
+        bottom: 0 !important;
+        right: 0 !important;
+        left: 0 !important;
+        border-radius: 0;
+    }
+
+    .nerdsiq-launch-btn .nerdsiq-btn-text {
+        display: none;
+    }
+
+    .nerdsiq-launch-btn {
+        width: 56px;
+        height: 56px;
+        padding: 0;
+        border-radius: 50%;
+        justify-content: center;
+    }
+}

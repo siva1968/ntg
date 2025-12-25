@@ -1,0 +1,91 @@
+/**
+ * NerdsIQ AI Assistant - Admin Styles
+ *
+ * @package NerdsIQ_AI_Assistant
+ * @since   1.0.0
+ */
+
+.nerdsiq-admin-wrap {
+    margin: 20px 20px 0 0;
+}
+
+.nerdsiq-admin-container {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.04);
+    margin-top: 20px;
+}
+
+/* Tabs */
+.nerdsiq-tabs {
+    display: flex;
+    border-bottom: 1px solid #ccd0d4;
+    background: #f0f0f1;
+}
+
+.nerdsiq-tab {
+    padding: 12px 20px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: #50575e;
+    transition: all 0.2s;
+    border-bottom: 3px solid transparent;
+}
+
+.nerdsiq-tab:hover {
+    background: rgba(0,0,0,0.03);
+}
+
+.nerdsiq-tab.active {
+    background: #fff;
+    color: #2271b1;
+    border-bottom-color: #2271b1;
+}
+
+/* Tab Content */
+.nerdsiq-tab-content {
+    display: none;
+    padding: 30px;
+}
+
+.nerdsiq-tab-content.active {
+    display: block;
+}
+
+/* Status Messages */
+.nerdsiq-status {
+    display: inline-block;
+    margin-left: 10px;
+    padding: 4px 12px;
+    border-radius: 3px;
+    font-size: 13px;
+}
+
+.nerdsiq-status.success {
+    background: #d4edda;
+    color: #155724;
+}
+
+.nerdsiq-status.error {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.nerdsiq-status.loading {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+/* Color Picker */
+.nerdsiq-color-picker {
+    width: 100px !important;
+}
+
+/* Code Editor */
+textarea.code {
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+}

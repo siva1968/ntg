@@ -1,0 +1,27 @@
+{
+    "name": "nerdstogo/nerdsiq-ai-assistant",
+    "description": "Secure WordPress integration with AWS Q Business chatbot",
+    "type": "wordpress-plugin",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "NerdsToGo",
+            "email": "support@nerdstogo.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.4",
+        "aws/aws-sdk-php": "^3.0"
+    },
+    "autoload": {
+        "classmap": [
+            "includes/",
+            "admin/",
+            "public/"
+        ]
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist"
+    }
+}
