@@ -99,6 +99,9 @@ if ( ! defined( 'WPINC' ) ) {
                     <tr>
                         <th scope="row"></th>
                         <td>
+                            <button type="button" id="nerdsiq-save-credentials" class="button button-primary">
+                                <?php esc_html_e( 'Save AWS Credentials', 'nerdsiq-ai-assistant' ); ?>
+                            </button>
                             <button type="button" id="nerdsiq-test-connection" class="button button-secondary">
                                 <?php esc_html_e( 'Test Connection', 'nerdsiq-ai-assistant' ); ?>
                             </button>

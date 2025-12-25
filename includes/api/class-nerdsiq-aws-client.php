@@ -13,6 +13,12 @@ if ( ! defined( 'WPINC' ) ) {
     die;
 }
 
+// Load AWS SDK autoloader
+$aws_autoloader = NERDSIQ_PLUGIN_DIR . 'vendor/autoload.php';
+if ( file_exists( $aws_autoloader ) ) {
+    require_once $aws_autoloader;
+}
+
 use Aws\QBusiness\QBusinessClient;
 use Aws\Exception\AwsException;
 

@@ -140,6 +140,7 @@ class NerdsIQ_AI_Assistant {
 
         // AJAX handlers for admin
         $this->loader->add_action( 'wp_ajax_nerdsiq_test_connection', $plugin_admin, 'ajax_test_connection' );
+        $this->loader->add_action( 'wp_ajax_nerdsiq_save_aws_credentials', $plugin_admin, 'ajax_save_aws_credentials' );
         $this->loader->add_action( 'wp_ajax_nerdsiq_get_analytics', $plugin_admin, 'ajax_get_analytics' );
         $this->loader->add_action( 'wp_ajax_nerdsiq_export_data', $plugin_admin, 'ajax_export_data' );
         $this->loader->add_action( 'wp_ajax_nerdsiq_clear_logs', $plugin_admin, 'ajax_clear_logs' );

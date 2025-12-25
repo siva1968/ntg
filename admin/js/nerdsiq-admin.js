@@ -27,6 +27,50 @@
             $('#tab-' + tabId).addClass('active');
         });
 
+        // Save AWS Credentials via AJAX
+        $('#nerdsiq-save-credentials').on('click', function() {
+            const $btn = $(this);
+            const $status = $('#nerdsiq-connection-status');
+            const originalText = $btn.text();
+
+            const accessKey = $('#nerdsiq_aws_access_key').val();
+            const secretKey = $('#nerdsiq_aws_secret_key').val();
+            const region = $('#nerdsiq_aws_region').val();
+            const appId = $('#nerdsiq_qbusiness_app_id').val();
+
+            $btn.prop('disabled', true).text('Saving...');
+            $status.removeClass('success error').addClass('loading').text('Saving credentials...');
+
+            $.ajax({
+                url: nerdsiq_admin.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'nerdsiq_save_aws_credentials',
+                    nonce: nerdsiq_admin.nonce,
+                    access_key: accessKey,
+                    secret_key: secretKey,
+                    region: region,
+                    app_id: appId
+                },
+                success: function(response) {
+                    $btn.prop('disabled', false).text(originalText);
+
+                    if (response.success) {
+                        $status.removeClass('loading error').addClass('success').text(response.data.message);
+                        // Clear the fields to show asterisks
+                        $('#nerdsiq_aws_access_key').val('********************');
+                        $('#nerdsiq_aws_secret_key').val('****************************************');
+                    } else {
+                        $status.removeClass('loading success').addClass('error').text(response.data.message);
+                    }
+                },
+                error: function() {
+                    $btn.prop('disabled', false).text(originalText);
+                    $status.removeClass('loading success').addClass('error').text('Failed to save credentials');
+                }
+            });
+        });
+
         // Test AWS connection
         $('#nerdsiq-test-connection').on('click', function() {
             const $btn = $(this);
@@ -38,6 +82,7 @@
             $.ajax({
                 url: nerdsiq_admin.ajax_url,
                 type: 'POST',
+                timeout: 30000,
                 data: {
                     action: 'nerdsiq_test_connection',
                     nonce: nerdsiq_admin.nonce
@@ -48,12 +93,32 @@
                     if (response.success) {
                         $status.removeClass('loading error').addClass('success').text(response.data.message);
                     } else {
-                        $status.removeClass('loading success').addClass('error').text(response.data.message);
+                        $status.removeClass('loading success').addClass('error').text(response.data.message || 'Connection failed');
                     }
                 },
-                error: function() {
+                error: function(xhr, status, error) {
                     $btn.prop('disabled', false).text('Test Connection');
-                    $status.removeClass('loading success').addClass('error').text('Connection test failed');
+                    var errorMsg = 'Connection test failed';
+                    if (status === 'timeout') {
+                        errorMsg = 'Request timed out. Check your AWS credentials and network.';
+                    } else if (xhr.responseText) {
+                        // Try to extract error from response
+                        try {
+                            var resp = JSON.parse(xhr.responseText);
+                            if (resp.data && resp.data.message) {
+                                errorMsg = resp.data.message;
+                            }
+                        } catch(e) {
+                            // Check for PHP errors in response
+                            if (xhr.responseText.indexOf('Fatal error') !== -1) {
+                                errorMsg = 'PHP Error. Check server logs.';
+                            } else if (xhr.status === 0) {
+                                errorMsg = 'Network error. Check your connection.';
+                            }
+                        }
+                    }
+                    $status.removeClass('loading success').addClass('error').text(errorMsg);
+                    console.log('AJAX Error:', status, error, xhr.responseText);
                 }
             });
         });

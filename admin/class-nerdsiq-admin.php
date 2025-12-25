@@ -180,12 +180,46 @@ class NerdsIQ_Admin {
 
         // Register each setting
         foreach ( $options as $option_name ) {
-            register_setting(
-                'nerdsiq_settings_group',
-                $option_name,
-                array( $this, 'sanitize_setting' )
-            );
+            // Use specific sanitization for AWS credentials
+            if ( 'nerdsiq_aws_access_key' === $option_name || 'nerdsiq_aws_secret_key' === $option_name ) {
+                register_setting(
+                    'nerdsiq_settings_group',
+                    $option_name,
+                    array( $this, 'sanitize_aws_credential' )
+                );
+            } else {
+                register_setting(
+                    'nerdsiq_settings_group',
+                    $option_name,
+                    array( $this, 'sanitize_setting' )
+                );
+            }
         }
+    }
+
+    /**
+     * Sanitize AWS credentials with encryption.
+     *
+     * @since  1.0.0
+     * @param  mixed $value Credential value.
+     * @return string Encrypted credential.
+     */
+    public function sanitize_aws_credential( $value ) {
+        // Don't save if it's just asterisks (placeholder)
+        if ( preg_match( '/^\*+$/', $value ) ) {
+            // Get the current filter to determine which option
+            $current_filter = current_filter();
+            if ( strpos( $current_filter, 'nerdsiq_aws_access_key' ) !== false ) {
+                return get_option( 'nerdsiq_aws_access_key', '' );
+            } elseif ( strpos( $current_filter, 'nerdsiq_aws_secret_key' ) !== false ) {
+                return get_option( 'nerdsiq_aws_secret_key', '' );
+            }
+            return $value;
+        }
+
+        // Encrypt the new value
+        require_once NERDSIQ_PLUGIN_DIR . 'includes/security/class-nerdsiq-security.php';
+        return NerdsIQ_Security::encrypt( sanitize_text_field( $value ) );
     }
 
     /**
@@ -373,6 +407,45 @@ class NerdsIQ_Admin {
     }
 
     /**
+     * AJAX handler for saving AWS credentials.
+     *
+     * @since 1.0.0
+     */
+    public function ajax_save_aws_credentials() {
+        check_ajax_referer( 'nerdsiq_admin_nonce', 'nonce' );
+
+        require_once NERDSIQ_PLUGIN_DIR . 'includes/security/class-nerdsiq-access-control.php';
+
+        if ( ! NerdsIQ_Access_Control::can_manage_settings() ) {
+            wp_send_json_error( array( 'message' => __( 'Permission denied.', 'nerdsiq-ai-assistant' ) ) );
+        }
+
+        require_once NERDSIQ_PLUGIN_DIR . 'includes/security/class-nerdsiq-security.php';
+
+        $access_key = isset( $_POST['access_key'] ) ? sanitize_text_field( $_POST['access_key'] ) : '';
+        $secret_key = isset( $_POST['secret_key'] ) ? sanitize_text_field( $_POST['secret_key'] ) : '';
+        $region = isset( $_POST['region'] ) ? sanitize_text_field( $_POST['region'] ) : 'us-east-1';
+        $app_id = isset( $_POST['app_id'] ) ? sanitize_text_field( $_POST['app_id'] ) : '';
+
+        // Encrypt and save credentials
+        if ( ! empty( $access_key ) && ! preg_match( '/^\*+$/', $access_key ) ) {
+            $encrypted_access_key = NerdsIQ_Security::encrypt( $access_key );
+            update_option( 'nerdsiq_aws_access_key', $encrypted_access_key );
+        }
+
+        if ( ! empty( $secret_key ) && ! preg_match( '/^\*+$/', $secret_key ) ) {
+            $encrypted_secret_key = NerdsIQ_Security::encrypt( $secret_key );
+            update_option( 'nerdsiq_aws_secret_key', $encrypted_secret_key );
+        }
+
+        // Save region and app ID (not encrypted)
+        update_option( 'nerdsiq_aws_region', $region );
+        update_option( 'nerdsiq_qbusiness_app_id', $app_id );
+
+        wp_send_json_success( array( 'message' => __( 'AWS credentials saved successfully.', 'nerdsiq-ai-assistant' ) ) );
+    }
+
+    /**
      * AJAX handler for testing AWS connection.
      *
      * @since 1.0.0
@@ -386,15 +459,28 @@ class NerdsIQ_Admin {
             wp_send_json_error( array( 'message' => __( 'Permission denied.', 'nerdsiq-ai-assistant' ) ) );
         }
 
-        require_once NERDSIQ_PLUGIN_DIR . 'includes/api/class-nerdsiq-aws-client.php';
+        try {
+            // Check if autoloader exists
+            $autoloader = NERDSIQ_PLUGIN_DIR . 'vendor/autoload.php';
+            if ( ! file_exists( $autoloader ) ) {
+                wp_send_json_error( array( 'message' => __( 'AWS SDK not found. Please reinstall the plugin.', 'nerdsiq-ai-assistant' ) ) );
+            }
 
-        $client = new NerdsIQ_AWS_Client();
-        $result = $client->test_connection();
+            require_once $autoloader;
+            require_once NERDSIQ_PLUGIN_DIR . 'includes/api/class-nerdsiq-aws-client.php';
 
-        if ( $result['success'] ) {
-            wp_send_json_success( $result );
-        } else {
-            wp_send_json_error( $result );
+            $client = new NerdsIQ_AWS_Client();
+            $result = $client->test_connection();
+
+            if ( $result['success'] ) {
+                wp_send_json_success( $result );
+            } else {
+                wp_send_json_error( $result );
+            }
+        } catch ( Exception $e ) {
+            wp_send_json_error( array( 'message' => 'Error: ' . $e->getMessage() ) );
+        } catch ( Error $e ) {
+            wp_send_json_error( array( 'message' => 'PHP Error: ' . $e->getMessage() ) );
         }
     }
 

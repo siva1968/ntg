@@ -11,7 +11,7 @@
     ],
     "require": {
         "php": ">=7.4",
-        "aws/aws-sdk-php": "^3.0"
+        "aws/aws-sdk-php": "3.283.0"
     },
     "autoload": {
         "classmap": [
@@ -22,6 +22,9 @@
     },
     "config": {
         "optimize-autoloader": true,
-        "preferred-install": "dist"
+        "preferred-install": "dist",
+        "platform": {
+            "php": "7.4.33"
+        }
     }
 }
