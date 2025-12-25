@@ -14,12 +14,19 @@
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Configuration](#configuration)
+- [AWS Setup Guide](#aws-setup-guide) ⭐
 - [Usage](#usage)
 - [Security](#security)
 - [Architecture](#architecture)
 - [Development](#development)
 - [Troubleshooting](#troubleshooting)
 - [License](#license)
+
+## 📚 Documentation
+
+- **[AWS Configuration Guide](AWS-CONFIGURATION.md)** - Detailed step-by-step AWS setup ⭐
+- **[Installation Guide](INSTALL.md)** - Complete installation instructions
+- **[README](README.md)** - This file (overview and quick start)
 
 ## 🎯 Overview
 
@@ -166,6 +173,18 @@ After activation, the plugin will:
 
 ## ⚙️ Configuration
 
+### Quick Configuration Overview
+
+After installing the plugin, you'll need to configure AWS credentials. This requires:
+
+1. **AWS Access Key ID** - From IAM user
+2. **AWS Secret Access Key** - From IAM user (encrypted when saved)
+3. **AWS Region** - Where your Q Business app is deployed
+4. **Q Business Application ID** - From AWS Q Business console
+
+> 📖 **Need detailed AWS setup instructions?**
+> See the complete **[AWS Configuration Guide](AWS-CONFIGURATION.md)** for step-by-step instructions with screenshots and troubleshooting.
+
 ### Step 1: AWS Setup
 
 1. **Navigate to Settings**
@@ -182,6 +201,9 @@ After activation, the plugin will:
    - Click "Test Connection" button
    - Verify successful connection (green status)
    - Check latency is acceptable
+
+> ⚠️ **First time setting up AWS?**
+> Follow our **[AWS Configuration Guide](AWS-CONFIGURATION.md)** for complete instructions on creating IAM users, policies, and getting your credentials.
 
 ### Step 2: Access Control
 
@@ -261,6 +283,70 @@ After activation, the plugin will:
    - Enable caching for faster responses
    - Set cache duration
    - Configure API timeouts and retries
+
+## 🔐 AWS Setup Guide
+
+### Complete AWS Configuration
+
+For detailed instructions on setting up AWS credentials, see the **[AWS Configuration Guide](AWS-CONFIGURATION.md)**.
+
+This guide includes:
+
+- ✅ Step-by-step IAM user creation
+- ✅ IAM policy configuration with examples
+- ✅ How to generate and secure access keys
+- ✅ Finding your Q Business Application ID
+- ✅ Configuring the plugin in WordPress
+- ✅ Testing your connection
+- ✅ Troubleshooting common issues
+- ✅ Security best practices
+- ✅ Quick reference cards
+
+### Quick AWS Checklist
+
+Before configuring the plugin, gather these four pieces of information:
+
+```
+☐ AWS Access Key ID: AKIA________________
+☐ AWS Secret Access Key: ____________________
+☐ AWS Region: ___________ (e.g., us-east-1)
+☐ Q Business Application ID: ________-____-____-____-____________
+```
+
+### Required IAM Permissions
+
+Your IAM user needs this policy:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "qbusiness:ChatSync",
+        "qbusiness:ListMessages",
+        "qbusiness:GetConversation",
+        "qbusiness:ListConversations"
+      ],
+      "Resource": "arn:aws:qbusiness:*:*:application/*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::your-bucket-name",
+        "arn:aws:s3:::your-bucket-name/*"
+      ]
+    }
+  ]
+}
+```
+
+> 📚 **See full AWS setup guide**: [AWS-CONFIGURATION.md](AWS-CONFIGURATION.md)
 
 ## 📖 Usage
 
