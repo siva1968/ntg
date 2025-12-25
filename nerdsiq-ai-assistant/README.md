@@ -7,6 +7,25 @@
 ![PHP](https://img.shields.io/badge/php-7.4+-purple.svg)
 ![License](https://img.shields.io/badge/license-GPL--2.0+-red.svg)
 
+## 🚀 At a Glance
+
+**What is this?** An AI chatbot for your WordPress website that answers questions using your company knowledge base.
+
+**Who is it for?** Your team members who need quick answers (only logged-in WordPress users can access it).
+
+**What do I need?**
+- WordPress 5.8+ website ✅
+- Amazon AWS account ✅
+- 30 minutes to set up ✅
+
+**Is it hard to install?** No! We have a [Quick Start Guide](QUICK-START.md) for beginners.
+
+**Is it secure?** Yes! All credentials are encrypted, and only authorized users can access the chatbot.
+
+**How much does it cost?** The plugin is free. AWS Q Business has usage-based pricing (~$106-112/month for 5 users).
+
+---
+
 ## 📋 Table of Contents
 
 - [Overview](#overview)
@@ -24,9 +43,22 @@
 
 ## 📚 Documentation
 
-- **[AWS Configuration Guide](AWS-CONFIGURATION.md)** - Detailed step-by-step AWS setup ⭐
-- **[Installation Guide](INSTALL.md)** - Complete installation instructions
-- **[README](README.md)** - This file (overview and quick start)
+### 👋 New to WordPress or AWS?
+- **[⭐ QUICK START GUIDE](QUICK-START.md)** - **START HERE!** Beginner-friendly guide for non-technical users
+
+### Detailed Guides
+- **[AWS Configuration Guide](AWS-CONFIGURATION.md)** - Complete AWS setup (534 lines, detailed)
+- **[Installation Guide](INSTALL.md)** - Technical installation instructions
+- **[README](README.md)** - This file (complete reference documentation)
+
+### 🤔 Which Guide Should I Use?
+
+| Your Experience | Recommended Guide | Time Needed |
+|----------------|-------------------|-------------|
+| 😊 Never used WordPress plugins or AWS | [QUICK-START.md](QUICK-START.md) | 30 min |
+| 🤔 Used WordPress, new to AWS | [AWS-CONFIGURATION.md](AWS-CONFIGURATION.md) | 20 min |
+| 😎 Familiar with both | [INSTALL.md](INSTALL.md) | 10 min |
+| 🚀 Just want all technical details | Keep reading below | - |
 
 ## 🎯 Overview
 

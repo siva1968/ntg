@@ -1,54 +1,129 @@
 # NerdsIQ AI Assistant - Installation Guide
 
-## Quick Start
+## 👋 Which Guide Should You Use?
 
-Follow these steps to install and configure the NerdsIQ AI Assistant plugin.
+**Choose the right guide for your experience level:**
 
-## Prerequisites
+| Guide | Best For | Difficulty |
+|-------|---------|-----------|
+| [QUICK-START.md](QUICK-START.md) | Non-technical users, beginners | ⭐ Easy |
+| **This guide (INSTALL.md)** | Users who know WordPress & some technical stuff | ⭐⭐ Medium |
+| [AWS-CONFIGURATION.md](AWS-CONFIGURATION.md) | Detailed AWS setup with troubleshooting | ⭐⭐⭐ Advanced |
 
-Before installation, ensure you have:
+**If you're not sure,** start with [QUICK-START.md](QUICK-START.md)!
 
-- [ ] WordPress 5.8 or higher
-- [ ] PHP 7.4 or higher
-- [ ] MySQL 5.7 or higher
-- [ ] AWS account with Q Business configured
-- [ ] AWS IAM credentials
-- [ ] Composer installed (for dependency management)
+---
+
+## 📖 What This Guide Covers
+
+This guide shows you how to:
+1. ✅ Upload the plugin to WordPress (2 ways)
+2. ✅ Get your AWS credentials
+3. ✅ Configure the plugin
+4. ✅ Test that everything works
+5. ✅ Troubleshoot common problems
+
+**Time needed:** 20-30 minutes
+
+---
+
+## Prerequisites (What You Need Before Starting)
+
+Before installation, make sure you have:
+
+### ✅ WordPress Website
+- [ ] **WordPress 5.8 or higher** installed
+- [ ] **Admin access** to WordPress dashboard
+- [ ] **Can install plugins** (not all hosts allow this)
+
+**How to check:** Go to WordPress Admin → Dashboard. Look at bottom right for version number.
+
+### ✅ Server Requirements
+- [ ] **PHP 7.4 or higher** (ask your hosting provider)
+- [ ] **MySQL 5.7 or higher** (usually comes with WordPress)
+- [ ] **HTTPS enabled** (recommended for security)
+
+**How to check:** Ask your web hosting support or check your hosting control panel.
+
+### ✅ AWS Account Setup
+- [ ] **AWS account** created (free to sign up)
+- [ ] **Q Business application** configured
+- [ ] **AWS credentials ready** (we'll get these in Step 4)
+
+**Don't have AWS setup?** See [AWS-CONFIGURATION.md](AWS-CONFIGURATION.md) for complete setup guide.
+
+### ✅ The Plugin File
+- [ ] **nerdsiq-ai-assistant-v1.0.0-production.zip** downloaded (13 MB file)
+
+**Note:** If you're installing from source code, you'll also need Composer (a PHP tool). But if you have the production ZIP file, you don't need this!
 
 ## Installation Steps
 
-### 1. Prepare the Plugin
+### Step 1: Upload the Plugin to WordPress (5 minutes)
 
-```bash
-# Clone the repository
-git clone https://github.com/nerdstogo/nerdsiq-ai-assistant.git
-cd nerdsiq-ai-assistant
+**Recommended Method: Via WordPress Admin** 👈 Easiest!
 
-# Install PHP dependencies
-composer install --no-dev --optimize-autoloader
-```
+1. **Log into WordPress**
+   - Go to your website: `https://yoursite.com/wp-admin`
+   - Enter your username and password
 
-### 2. Upload to WordPress
+2. **Navigate to Plugins**
+   - Look at the left sidebar
+   - Click **"Plugins"**
+   - Click **"Add New"**
 
-**Option A: Via WordPress Admin**
-1. Compress the plugin folder to a ZIP file
-2. Go to WordPress Admin → Plugins → Add New
-3. Click "Upload Plugin"
-4. Select the ZIP file and click "Install Now"
-5. Click "Activate Plugin"
+3. **Upload the ZIP file**
+   - At the top of the page, click **"Upload Plugin"** button
+   - Click **"Choose File"**
+   - Select: `nerdsiq-ai-assistant-v1.0.0-production.zip`
+   - Click **"Install Now"**
 
-**Option B: Via FTP/SSH**
-1. Upload the `nerdsiq-ai-assistant` folder to `wp-content/plugins/`
-2. Go to WordPress Admin → Plugins
-3. Find "NerdsIQ AI Assistant" and click "Activate"
+4. **Wait for Upload**
+   - This takes 10-30 seconds (it's a 13 MB file)
+   - You'll see a progress bar
+   - When done, you'll see "Plugin installed successfully"
 
-### 3. Initial Configuration
+5. **Activate the Plugin**
+   - Click the blue **"Activate Plugin"** button
+   - You'll be redirected to the Plugins page
+   - Look for a green banner: "Plugin activated"
 
-After activation, the plugin will automatically:
-- Create required database tables
-- Set default options
-- Add user capabilities
-- Display a welcome message
+**✅ Success!** You should now see **"NerdsIQ"** in your left sidebar.
+
+---
+
+**Alternative Method: Via FTP** (For advanced users)
+
+If you have FTP access:
+1. Unzip the `nerdsiq-ai-assistant-v1.0.0-production.zip` file
+2. Upload the `nerdsiq-ai-assistant` folder to `/wp-content/plugins/`
+3. Go to WordPress Admin → Plugins
+4. Find "NerdsIQ AI Assistant"
+5. Click "Activate"
+
+---
+
+### Step 2: Check Installation Success (1 minute)
+
+After activation, the plugin automatically:
+- ✅ Creates 4 database tables (for storing conversations)
+- ✅ Sets default settings (safe defaults for all options)
+- ✅ Adds user permissions (who can use the chatbot)
+
+**How to verify it worked:**
+
+1. **Check for "NerdsIQ" in sidebar**
+   - Left sidebar should show "NerdsIQ" menu item
+   - If you see it → ✅ Installation successful!
+
+2. **Check for errors**
+   - Look for any red error messages
+   - If you see errors → See [Troubleshooting](#troubleshooting)
+
+3. **Check plugin list**
+   - Go to Plugins page
+   - "NerdsIQ AI Assistant" should show as "Active"
+   - Version should be 1.0.0
 
 ### 4. Configure AWS Credentials
 
