@@ -54,78 +54,63 @@ class NerdsIQ_Activator {
      * @since 1.0.0
      */
     private static function set_default_options() {
-        $default_options = array(
-            // General Settings
-            'nerdsiq_enabled' => true,
-            'nerdsiq_aws_access_key' => '',
-            'nerdsiq_aws_secret_key' => '',
-            'nerdsiq_aws_region' => 'us-east-1',
-            'nerdsiq_qbusiness_app_id' => '',
-            'nerdsiq_qbusiness_index_id' => '',
-
-            // Display & Access Control
-            'nerdsiq_display_pages' => array( 'all' ),
-            'nerdsiq_allowed_roles' => array( 'administrator', 'editor' ),
-            'nerdsiq_user_whitelist' => array(),
-            'nerdsiq_user_blacklist' => array(),
-
-            // Appearance & Branding
-            'nerdsiq_widget_position' => 'bottom-right',
-            'nerdsiq_button_text' => 'Ask NerdsIQ',
-            'nerdsiq_primary_color' => '#0073aa',
-            'nerdsiq_secondary_color' => '#005177',
-            'nerdsiq_user_message_color' => '#0073aa',
-            'nerdsiq_ai_message_color' => '#f0f0f0',
-            'nerdsiq_background_color' => '#ffffff',
-            'nerdsiq_text_color' => '#333333',
-            'nerdsiq_link_color' => '#0073aa',
-            'nerdsiq_widget_width' => 400,
-            'nerdsiq_widget_height' => 600,
-            'nerdsiq_border_radius' => 10,
-            'nerdsiq_shadow_depth' => 'medium',
-            'nerdsiq_font_family' => 'system',
-            'nerdsiq_font_size' => 14,
-            'nerdsiq_line_height' => 1.5,
-            'nerdsiq_welcome_message' => 'Hi! I\'m your NerdsIQ AI Assistant. How can I help you today?',
-            'nerdsiq_suggested_questions' => array(
-                'How do I reset a customer\'s password?',
-                'What are our service pricing tiers?',
-                'How do I troubleshoot network connectivity?',
-            ),
-            'nerdsiq_show_welcome_returning' => false,
-
-            // Behavior & Features
-            'nerdsiq_enable_history' => true,
-            'nerdsiq_conversation_timeout' => 30,
-            'nerdsiq_max_messages' => 50,
-            'nerdsiq_show_typing_indicator' => true,
-            'nerdsiq_typing_duration' => 2,
-            'nerdsiq_show_citations' => true,
-            'nerdsiq_citation_format' => 'inline',
-            'nerdsiq_enable_suggestions' => true,
-
-            // Rate Limiting
-            'nerdsiq_rate_limit_hourly' => 50,
-            'nerdsiq_rate_limit_daily' => 250,
-            'nerdsiq_rate_limit_message' => 'You\'ve reached your message limit. Please try again later.',
-
-            // Advanced Settings
-            'nerdsiq_custom_css' => '',
-            'nerdsiq_custom_js' => '',
-            'nerdsiq_enable_cache' => true,
-            'nerdsiq_cache_duration' => 15,
-            'nerdsiq_lazy_load' => true,
-            'nerdsiq_preload_history' => false,
-            'nerdsiq_debug_mode' => false,
-            'nerdsiq_log_level' => 'errors',
-            'nerdsiq_log_retention' => 30,
-            'nerdsiq_api_timeout' => 30,
-            'nerdsiq_api_retry_attempts' => 2,
-
-            // Analytics
-            'nerdsiq_enable_analytics' => true,
-            'nerdsiq_track_anonymous' => true,
-        );
+        // Load defaults from config file if it exists
+        $config_file = NERDSIQ_PLUGIN_DIR . 'includes/config/default-options.php';
+        if ( file_exists( $config_file ) ) {
+            $default_options = include $config_file;
+        } else {
+            // Fallback defaults
+            $default_options = array(
+                // AWS Configuration
+                'nerdsiq_aws_region'           => 'us-east-1',
+                'nerdsiq_qbusiness_app_id'     => '',
+                
+                // Branding - NerdsToGo Theme
+                'nerdsiq_primary_color'        => '#0047AC',
+                'nerdsiq_secondary_color'      => '#FFD301',
+                'nerdsiq_user_message_color'   => '#0047AC',
+                'nerdsiq_ai_message_color'     => '#f5f5f5',
+                'nerdsiq_background_color'     => '#ffffff',
+                'nerdsiq_text_color'           => '#333333',
+                'nerdsiq_link_color'           => '#0047AC',
+                
+                // Logo and Header
+                'nerdsiq_logo_url'             => '',
+                'nerdsiq_header_title'         => 'NerdsIQ AI Assistant',
+                'nerdsiq_button_text'          => 'Ask NerdsIQ',
+                
+                // Messages
+                'nerdsiq_welcome_message'      => 'Hi! How can I help you today?',
+                'nerdsiq_input_placeholder'    => 'Type your message...',
+                
+                // Widget Settings
+                'nerdsiq_widget_position'      => 'bottom-right',
+                'nerdsiq_widget_width'         => '400',
+                'nerdsiq_widget_height'        => '600',
+                'nerdsiq_border_radius'        => '10',
+                'nerdsiq_shadow_depth'         => 'medium',
+                
+                // Typography
+                'nerdsiq_font_family'          => 'system',
+                'nerdsiq_font_size'            => '14',
+                'nerdsiq_line_height'          => '1.5',
+                
+                // Access Control
+                'nerdsiq_enabled'              => '1',
+                'nerdsiq_require_login'        => '0',
+                'nerdsiq_display_mode'         => 'all',
+                'nerdsiq_allowed_roles'        => array( 'administrator', 'editor' ),
+                
+                // Features
+                'nerdsiq_show_citations'       => '1',
+                'nerdsiq_enable_history'       => '1',
+                'nerdsiq_show_typing_indicator'=> '1',
+                
+                // Rate Limiting
+                'nerdsiq_rate_limit_hourly'    => '50',
+                'nerdsiq_rate_limit_daily'     => '250',
+            );
+        }
 
         foreach ( $default_options as $option_name => $option_value ) {
             if ( false === get_option( $option_name ) ) {
