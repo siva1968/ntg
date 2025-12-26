@@ -475,6 +475,48 @@ class NerdsIQ_Admin {
             wp_send_json_error( array( 'message' => __( 'Permission denied.', 'nerdsiq-ai-assistant' ) ) );
         }
 
+        // Get credentials from form (if provided and not asterisks)
+        $access_key = isset( $_POST['access_key'] ) ? sanitize_text_field( $_POST['access_key'] ) : '';
+        $secret_key = isset( $_POST['secret_key'] ) ? sanitize_text_field( $_POST['secret_key'] ) : '';
+        $region = isset( $_POST['region'] ) ? sanitize_text_field( $_POST['region'] ) : '';
+        $app_id = isset( $_POST['app_id'] ) ? sanitize_text_field( $_POST['app_id'] ) : '';
+
+        // Check if form values are real (not asterisks placeholder)
+        $use_form_values = ! empty( $access_key ) && ! preg_match( '/^\*+$/', $access_key ) &&
+                           ! empty( $secret_key ) && ! preg_match( '/^\*+$/', $secret_key );
+
+        if ( $use_form_values ) {
+            // Validate access key format
+            if ( ! preg_match( '/^(AKIA|ASIA|AIDA|AROA|AIPA|ANPA|ANVA|AGPA)[A-Z0-9]{16}$/', $access_key ) ) {
+                wp_send_json_error( array( 
+                    'message' => sprintf(
+                        __( 'Invalid Access Key format. AWS Access Key IDs start with AKIA and are 20 characters. You entered: %s...', 'nerdsiq-ai-assistant' ),
+                        substr( $access_key, 0, 8 )
+                    )
+                ) );
+                return;
+            }
+
+            // Save the credentials first, then test
+            require_once NERDSIQ_PLUGIN_DIR . 'includes/security/class-nerdsiq-security.php';
+
+            delete_option( 'nerdsiq_aws_access_key' );
+            delete_option( 'nerdsiq_aws_secret_key' );
+            
+            $encrypted_access_key = NerdsIQ_Security::encrypt( $access_key );
+            $encrypted_secret_key = NerdsIQ_Security::encrypt( $secret_key );
+            
+            update_option( 'nerdsiq_aws_access_key', $encrypted_access_key, false );
+            update_option( 'nerdsiq_aws_secret_key', $encrypted_secret_key, false );
+            
+            if ( ! empty( $region ) ) {
+                update_option( 'nerdsiq_aws_region', $region );
+            }
+            if ( ! empty( $app_id ) ) {
+                update_option( 'nerdsiq_qbusiness_app_id', $app_id );
+            }
+        }
+
         try {
             // Check if autoloader exists
             $autoloader = NERDSIQ_PLUGIN_DIR . 'vendor/autoload.php';

@@ -75,6 +75,12 @@
         $('#nerdsiq-test-connection').on('click', function() {
             const $btn = $(this);
             const $status = $('#nerdsiq-connection-status');
+            
+            // Get current form values to pass to test
+            const accessKey = $('#nerdsiq_aws_access_key').val();
+            const secretKey = $('#nerdsiq_aws_secret_key').val();
+            const region = $('#nerdsiq_aws_region').val();
+            const appId = $('#nerdsiq_qbusiness_app_id').val();
 
             $btn.prop('disabled', true).text(nerdsiq_admin.strings.testing);
             $status.removeClass('success error').addClass('loading').text('Testing...');
@@ -85,7 +91,11 @@
                 timeout: 30000,
                 data: {
                     action: 'nerdsiq_test_connection',
-                    nonce: nerdsiq_admin.nonce
+                    nonce: nerdsiq_admin.nonce,
+                    access_key: accessKey,
+                    secret_key: secretKey,
+                    region: region,
+                    app_id: appId
                 },
                 success: function(response) {
                     $btn.prop('disabled', false).text('Test Connection');
