@@ -427,15 +427,31 @@ class NerdsIQ_Admin {
         $region = isset( $_POST['region'] ) ? sanitize_text_field( $_POST['region'] ) : 'us-east-1';
         $app_id = isset( $_POST['app_id'] ) ? sanitize_text_field( $_POST['app_id'] ) : '';
 
-        // Encrypt and save credentials
+        // Validate access key format before saving
         if ( ! empty( $access_key ) && ! preg_match( '/^\*+$/', $access_key ) ) {
+            // Check if it looks like a valid AWS Access Key
+            if ( ! preg_match( '/^(AKIA|ASIA|AIDA|AROA|AIPA|ANPA|ANVA|AGPA)[A-Z0-9]{16}$/', $access_key ) ) {
+                wp_send_json_error( array( 
+                    'message' => sprintf(
+                        __( 'Invalid Access Key format. AWS Access Key IDs start with AKIA and are 20 characters. You entered: %s...', 'nerdsiq-ai-assistant' ),
+                        substr( $access_key, 0, 8 )
+                    )
+                ) );
+                return;
+            }
+        }
+
+        // Encrypt and save credentials - always delete first to ensure clean save
+        if ( ! empty( $access_key ) && ! preg_match( '/^\*+$/', $access_key ) ) {
+            delete_option( 'nerdsiq_aws_access_key' );
             $encrypted_access_key = NerdsIQ_Security::encrypt( $access_key );
-            update_option( 'nerdsiq_aws_access_key', $encrypted_access_key );
+            update_option( 'nerdsiq_aws_access_key', $encrypted_access_key, false );
         }
 
         if ( ! empty( $secret_key ) && ! preg_match( '/^\*+$/', $secret_key ) ) {
+            delete_option( 'nerdsiq_aws_secret_key' );
             $encrypted_secret_key = NerdsIQ_Security::encrypt( $secret_key );
-            update_option( 'nerdsiq_aws_secret_key', $encrypted_secret_key );
+            update_option( 'nerdsiq_aws_secret_key', $encrypted_secret_key, false );
         }
 
         // Save region and app ID (not encrypted)
