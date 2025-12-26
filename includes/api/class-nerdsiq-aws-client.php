@@ -138,6 +138,26 @@ class NerdsIQ_AWS_Client {
                 );
             }
 
+            // Validate access key format (should start with AKIA, ASIA, or AIDA)
+            $access_key = $this->credentials['access_key'];
+            if ( ! preg_match( '/^(AKIA|ASIA|AIDA|AROA|AIPA|ANPA|ANVA|AGPA)[A-Z0-9]{16}$/', $access_key ) ) {
+                // Check if keys might be swapped
+                $secret_key = $this->credentials['secret_key'];
+                if ( preg_match( '/^(AKIA|ASIA|AIDA|AROA|AIPA|ANPA|ANVA|AGPA)[A-Z0-9]{16}$/', $secret_key ) ) {
+                    return array(
+                        'success' => false,
+                        'message' => __( 'Error: Access Key and Secret Key appear to be swapped. Please re-enter your credentials with Access Key ID in the first field (starts with AKIA) and Secret Access Key in the second field.', 'nerdsiq-ai-assistant' ),
+                    );
+                }
+                return array(
+                    'success' => false,
+                    'message' => sprintf(
+                        __( 'Invalid Access Key format. AWS Access Key IDs start with AKIA and are 20 characters. Your key starts with: %s', 'nerdsiq-ai-assistant' ),
+                        substr( $access_key, 0, 4 ) . '...'
+                    ),
+                );
+            }
+
             // Validate app ID exists
             if ( empty( $this->app_id ) ) {
                 return array(
