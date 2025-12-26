@@ -3,7 +3,7 @@
  * Plugin Name:       NerdsIQ AI Assistant
  * Plugin URI:        https://nerdstogo.com/nerdsiq-ai-assistant
  * Description:       Secure WordPress integration with AWS Q Business chatbot for NerdsToGo team members. Provides instant access to company knowledge through an AI-powered assistant.
- * Version:           1.1.7
+ * Version:           1.1.9
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            NerdsToGo
@@ -25,7 +25,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Current plugin version.
  * Start at version 1.0.0 and use SemVer - https://semver.org
  */
-define( 'NERDSIQ_VERSION', '1.1.7' );
+define( 'NERDSIQ_VERSION', '1.1.9' );
 
 /**
  * Plugin directory path
