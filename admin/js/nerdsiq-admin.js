@@ -27,6 +27,10 @@
             $('#tab-' + tabId).addClass('active');
         });
 
+        // Store credentials in memory for testing after save
+        let savedAccessKey = '';
+        let savedSecretKey = '';
+
         // Save AWS Credentials via AJAX
         $('#nerdsiq-save-credentials').on('click', function() {
             const $btn = $(this);
@@ -37,6 +41,16 @@
             const secretKey = $('#nerdsiq_aws_secret_key').val();
             const region = $('#nerdsiq_aws_region').val();
             const appId = $('#nerdsiq_qbusiness_app_id').val();
+
+            // Don't save if already asterisks
+            if (accessKey.match(/^\*+$/) || secretKey.match(/^\*+$/)) {
+                $status.removeClass('loading success').addClass('error').text('Please enter your actual credentials, not asterisks.');
+                return;
+            }
+
+            // Store in memory before replacing with asterisks
+            savedAccessKey = accessKey;
+            savedSecretKey = secretKey;
 
             $btn.prop('disabled', true).text('Saving...');
             $status.removeClass('success error').addClass('loading').text('Saving credentials...');
@@ -57,16 +71,22 @@
 
                     if (response.success) {
                         $status.removeClass('loading error').addClass('success').text(response.data.message);
-                        // Clear the fields to show asterisks
+                        // Show asterisks but keep real values in memory
                         $('#nerdsiq_aws_access_key').val('********************');
                         $('#nerdsiq_aws_secret_key').val('****************************************');
                     } else {
                         $status.removeClass('loading success').addClass('error').text(response.data.message);
+                        // Clear saved values on error
+                        savedAccessKey = '';
+                        savedSecretKey = '';
                     }
                 },
                 error: function() {
                     $btn.prop('disabled', false).text(originalText);
                     $status.removeClass('loading success').addClass('error').text('Failed to save credentials');
+                    // Clear saved values on error
+                    savedAccessKey = '';
+                    savedSecretKey = '';
                 }
             });
         });
@@ -76,8 +96,17 @@
             const $btn = $(this);
             const $status = $('#nerdsiq-connection-status');
             
-            // Get current form values to pass to test
-            const accessKey = $('#nerdsiq_aws_access_key').val();
+            // Get current form values, or use saved values if form shows asterisks
+            let accessKey = $('#nerdsiq_aws_access_key').val();
+            let secretKey = $('#nerdsiq_aws_secret_key').val();
+            
+            // If form shows asterisks, use the saved values from memory
+            if (accessKey.match(/^\*+$/) && savedAccessKey) {
+                accessKey = savedAccessKey;
+            }
+            if (secretKey.match(/^\*+$/) && savedSecretKey) {
+                secretKey = savedSecretKey;
+            }
             const secretKey = $('#nerdsiq_aws_secret_key').val();
             const region = $('#nerdsiq_aws_region').val();
             const appId = $('#nerdsiq_qbusiness_app_id').val();
