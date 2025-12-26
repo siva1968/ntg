@@ -56,6 +56,14 @@ class NerdsIQ_AWS_Client {
     private $client = null;
 
     /**
+     * Debug log helper
+     */
+    private function debug_log( $msg ) {
+        $log_file = WP_CONTENT_DIR . '/nerdsiq-debug.log';
+        file_put_contents( $log_file, '[' . date( 'Y-m-d H:i:s' ) . '] [AWS_CLIENT] ' . $msg . "\n", FILE_APPEND );
+    }
+
+    /**
      * Constructor
      *
      * @since 1.0.0
@@ -63,6 +71,8 @@ class NerdsIQ_AWS_Client {
      *                                   Keys: 'access_key', 'secret_key', 'region', 'app_id'
      */
     public function __construct( $direct_credentials = array() ) {
+        $this->debug_log( 'Constructor called with direct_credentials: ' . ( ! empty( $direct_credentials ) ? 'YES' : 'EMPTY' ) );
+        
         if ( ! empty( $direct_credentials ) ) {
             // Use directly provided credentials (bypass database entirely)
             $this->credentials = array(
@@ -71,11 +81,17 @@ class NerdsIQ_AWS_Client {
             );
             $this->region = isset( $direct_credentials['region'] ) ? $direct_credentials['region'] : 'us-east-1';
             $this->app_id = isset( $direct_credentials['app_id'] ) ? $direct_credentials['app_id'] : '';
+            
+            $this->debug_log( 'Using DIRECT credentials - access_key starts with: ' . substr( $this->credentials['access_key'], 0, 8 ) );
+            $this->debug_log( 'Region: ' . $this->region . ', App ID: ' . $this->app_id );
         } else {
             // Load from database (normal operation)
+            $this->debug_log( 'Loading from DATABASE' );
             $this->load_credentials();
             $this->region = get_option( 'nerdsiq_aws_region', 'us-east-1' );
             $this->app_id = get_option( 'nerdsiq_qbusiness_app_id', '' );
+            
+            $this->debug_log( 'After load_credentials - access_key starts with: ' . substr( $this->credentials['access_key'], 0, 8 ) );
         }
     }
 

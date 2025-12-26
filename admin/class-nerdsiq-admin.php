@@ -469,9 +469,18 @@ class NerdsIQ_Admin {
     public function ajax_test_connection() {
         check_ajax_referer( 'nerdsiq_admin_nonce', 'nonce' );
 
+        // Enable debug logging
+        $log_file = WP_CONTENT_DIR . '/nerdsiq-debug.log';
+        $log = function( $msg ) use ( $log_file ) {
+            file_put_contents( $log_file, '[' . date( 'Y-m-d H:i:s' ) . '] ' . $msg . "\n", FILE_APPEND );
+        };
+        
+        $log( '=== TEST CONNECTION START ===' );
+
         require_once NERDSIQ_PLUGIN_DIR . 'includes/security/class-nerdsiq-access-control.php';
 
         if ( ! NerdsIQ_Access_Control::can_manage_settings() ) {
+            $log( 'Permission denied' );
             wp_send_json_error( array( 'message' => __( 'Permission denied.', 'nerdsiq-ai-assistant' ) ) );
         }
 
@@ -481,16 +490,42 @@ class NerdsIQ_Admin {
         $region = isset( $_POST['region'] ) ? sanitize_text_field( $_POST['region'] ) : 'us-east-1';
         $app_id = isset( $_POST['app_id'] ) ? sanitize_text_field( $_POST['app_id'] ) : '';
 
+        $log( 'POST access_key received: ' . substr( $access_key, 0, 8 ) . '... (length: ' . strlen( $access_key ) . ')' );
+        $log( 'POST secret_key received: ' . ( ! empty( $secret_key ) ? 'YES (length: ' . strlen( $secret_key ) . ')' : 'EMPTY' ) );
+        $log( 'POST region: ' . $region );
+        $log( 'POST app_id: ' . $app_id );
+
         // Check if form values are real (not asterisks placeholder)
-        $use_form_values = ! empty( $access_key ) && ! preg_match( '/^\*+$/', $access_key ) &&
-                           ! empty( $secret_key ) && ! preg_match( '/^\*+$/', $secret_key );
+        $is_asterisks_access = preg_match( '/^\*+$/', $access_key );
+        $is_asterisks_secret = preg_match( '/^\*+$/', $secret_key );
+        $use_form_values = ! empty( $access_key ) && ! $is_asterisks_access &&
+                           ! empty( $secret_key ) && ! $is_asterisks_secret;
+
+        $log( 'Is access_key asterisks: ' . ( $is_asterisks_access ? 'YES' : 'NO' ) );
+        $log( 'Is secret_key asterisks: ' . ( $is_asterisks_secret ? 'YES' : 'NO' ) );
+        $log( 'Use form values: ' . ( $use_form_values ? 'YES' : 'NO' ) );
+
+        // If asterisks were sent, tell user to re-enter credentials
+        if ( $is_asterisks_access || $is_asterisks_secret ) {
+            $log( 'FAILED: Asterisks detected - user must re-enter credentials' );
+            wp_send_json_error( array( 
+                'message' => __( 'Please enter your AWS credentials in the fields above before testing. The asterisks (****) are just placeholders - you need to type your actual Access Key and Secret Key.', 'nerdsiq-ai-assistant' )
+            ) );
+            return;
+        }
 
         // Determine which credentials to use
         $test_credentials = array();
 
         if ( $use_form_values ) {
+            $log( 'Using form values for test' );
+            
             // Validate access key format
-            if ( ! preg_match( '/^(AKIA|ASIA|AIDA|AROA|AIPA|ANPA|ANVA|AGPA)[A-Z0-9]{16}$/', $access_key ) ) {
+            $valid_format = preg_match( '/^(AKIA|ASIA|AIDA|AROA|AIPA|ANPA|ANVA|AGPA)[A-Z0-9]{16}$/', $access_key );
+            $log( 'Access key format valid: ' . ( $valid_format ? 'YES' : 'NO' ) );
+            
+            if ( ! $valid_format ) {
+                $log( 'FAILED: Invalid access key format' );
                 wp_send_json_error( array( 
                     'message' => sprintf(
                         __( 'Invalid Access Key format. AWS Access Key IDs start with AKIA and are 20 characters. You entered: %s...', 'nerdsiq-ai-assistant' ),
@@ -507,6 +542,8 @@ class NerdsIQ_Admin {
                 'region'     => $region,
                 'app_id'     => $app_id,
             );
+            
+            $log( 'test_credentials prepared - access_key starts with: ' . substr( $test_credentials['access_key'], 0, 8 ) );
 
             // Also save them to database for future use
             require_once NERDSIQ_PLUGIN_DIR . 'includes/security/class-nerdsiq-security.php';
@@ -530,21 +567,34 @@ class NerdsIQ_Admin {
             if ( ! empty( $app_id ) ) {
                 update_option( 'nerdsiq_qbusiness_app_id', $app_id );
             }
+            
+            $log( 'Credentials saved to database' );
+        } else {
+            $log( 'NOT using form values - test_credentials is EMPTY' );
         }
 
         try {
             // Check if autoloader exists
             $autoloader = NERDSIQ_PLUGIN_DIR . 'vendor/autoload.php';
             if ( ! file_exists( $autoloader ) ) {
+                $log( 'FAILED: Autoloader not found' );
                 wp_send_json_error( array( 'message' => __( 'AWS SDK not found. Please reinstall the plugin.', 'nerdsiq-ai-assistant' ) ) );
             }
 
             require_once $autoloader;
             require_once NERDSIQ_PLUGIN_DIR . 'includes/api/class-nerdsiq-aws-client.php';
 
+            $log( 'Creating AWS client with test_credentials: ' . ( ! empty( $test_credentials ) ? 'YES' : 'EMPTY ARRAY' ) );
+            if ( ! empty( $test_credentials ) ) {
+                $log( 'test_credentials access_key: ' . substr( $test_credentials['access_key'], 0, 8 ) . '...' );
+            }
+
             // Pass credentials directly to client - bypasses database entirely for testing
             $client = new NerdsIQ_AWS_Client( $test_credentials );
             $result = $client->test_connection();
+
+            $log( 'Test result: ' . ( $result['success'] ? 'SUCCESS' : 'FAILED' ) );
+            $log( 'Message: ' . $result['message'] );
 
             if ( $result['success'] ) {
                 wp_send_json_success( $result );
@@ -552,8 +602,10 @@ class NerdsIQ_Admin {
                 wp_send_json_error( $result );
             }
         } catch ( Exception $e ) {
+            $log( 'Exception: ' . $e->getMessage() );
             wp_send_json_error( array( 'message' => 'Error: ' . $e->getMessage() ) );
         } catch ( Error $e ) {
+            $log( 'PHP Error: ' . $e->getMessage() );
             wp_send_json_error( array( 'message' => 'PHP Error: ' . $e->getMessage() ) );
         }
     }
