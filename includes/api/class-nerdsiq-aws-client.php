@@ -59,11 +59,24 @@ class NerdsIQ_AWS_Client {
      * Constructor
      *
      * @since 1.0.0
+     * @param array $direct_credentials Optional. Direct credentials to use instead of loading from database.
+     *                                   Keys: 'access_key', 'secret_key', 'region', 'app_id'
      */
-    public function __construct() {
-        $this->load_credentials();
-        $this->region = get_option( 'nerdsiq_aws_region', 'us-east-1' );
-        $this->app_id = get_option( 'nerdsiq_qbusiness_app_id', '' );
+    public function __construct( $direct_credentials = array() ) {
+        if ( ! empty( $direct_credentials ) ) {
+            // Use directly provided credentials (bypass database entirely)
+            $this->credentials = array(
+                'access_key' => isset( $direct_credentials['access_key'] ) ? $direct_credentials['access_key'] : '',
+                'secret_key' => isset( $direct_credentials['secret_key'] ) ? $direct_credentials['secret_key'] : '',
+            );
+            $this->region = isset( $direct_credentials['region'] ) ? $direct_credentials['region'] : 'us-east-1';
+            $this->app_id = isset( $direct_credentials['app_id'] ) ? $direct_credentials['app_id'] : '';
+        } else {
+            // Load from database (normal operation)
+            $this->load_credentials();
+            $this->region = get_option( 'nerdsiq_aws_region', 'us-east-1' );
+            $this->app_id = get_option( 'nerdsiq_qbusiness_app_id', '' );
+        }
     }
 
     /**

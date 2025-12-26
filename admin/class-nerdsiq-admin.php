@@ -478,12 +478,15 @@ class NerdsIQ_Admin {
         // Get credentials from form (if provided and not asterisks)
         $access_key = isset( $_POST['access_key'] ) ? sanitize_text_field( $_POST['access_key'] ) : '';
         $secret_key = isset( $_POST['secret_key'] ) ? sanitize_text_field( $_POST['secret_key'] ) : '';
-        $region = isset( $_POST['region'] ) ? sanitize_text_field( $_POST['region'] ) : '';
+        $region = isset( $_POST['region'] ) ? sanitize_text_field( $_POST['region'] ) : 'us-east-1';
         $app_id = isset( $_POST['app_id'] ) ? sanitize_text_field( $_POST['app_id'] ) : '';
 
         // Check if form values are real (not asterisks placeholder)
         $use_form_values = ! empty( $access_key ) && ! preg_match( '/^\*+$/', $access_key ) &&
                            ! empty( $secret_key ) && ! preg_match( '/^\*+$/', $secret_key );
+
+        // Determine which credentials to use
+        $test_credentials = array();
 
         if ( $use_form_values ) {
             // Validate access key format
@@ -497,9 +500,21 @@ class NerdsIQ_Admin {
                 return;
             }
 
-            // Save the credentials first, then test
+            // Use form values directly for testing (no database involved!)
+            $test_credentials = array(
+                'access_key' => $access_key,
+                'secret_key' => $secret_key,
+                'region'     => $region,
+                'app_id'     => $app_id,
+            );
+
+            // Also save them to database for future use
             require_once NERDSIQ_PLUGIN_DIR . 'includes/security/class-nerdsiq-security.php';
 
+            // Clear object cache for these options
+            wp_cache_delete( 'nerdsiq_aws_access_key', 'options' );
+            wp_cache_delete( 'nerdsiq_aws_secret_key', 'options' );
+            
             delete_option( 'nerdsiq_aws_access_key' );
             delete_option( 'nerdsiq_aws_secret_key' );
             
@@ -527,7 +542,8 @@ class NerdsIQ_Admin {
             require_once $autoloader;
             require_once NERDSIQ_PLUGIN_DIR . 'includes/api/class-nerdsiq-aws-client.php';
 
-            $client = new NerdsIQ_AWS_Client();
+            // Pass credentials directly to client - bypasses database entirely for testing
+            $client = new NerdsIQ_AWS_Client( $test_credentials );
             $result = $client->test_connection();
 
             if ( $result['success'] ) {
